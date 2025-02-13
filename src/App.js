@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Canvas, extend, useFrame } from '@react-three/fiber'
-import { Image, ScrollControls, useScroll, Billboard, Text } from '@react-three/drei'
+import { Image, ScrollControls, useScroll, Billboard, Text, Plane } from '@react-three/drei'
 import { suspend } from 'suspend-react'
 import { generate } from 'random-words'
 import { easing, geometry } from 'maath'
@@ -21,6 +21,7 @@ function Scene({ children, ...props }) {
   const ref = useRef()
   const scroll = useScroll()
   const [hovered, hover] = useState(null)
+  const [hoveredText, setHoveredText] = useState(null)
   useFrame((state, delta) => {
     ref.current.rotation.y = -scroll.offset * (Math.PI * 2) // Rotate contents
     state.events.update() // Raycasts every frame rather than on pointer-move
@@ -29,23 +30,42 @@ function Scene({ children, ...props }) {
   })
   return (
     <group ref={ref} {...props}>
-      <Cards category="Europa" from={0} len={Math.PI / 4} onPointerOver={hover} onPointerOut={hover} />
-      <Cards category="Africa" from={Math.PI / 4} len={Math.PI / 2} position={[0, 0.4, 0]} onPointerOver={hover} onPointerOut={hover} />
-      <Cards category="Americas" from={Math.PI / 4 + Math.PI / 2} len={Math.PI / 2} onPointerOver={hover} onPointerOut={hover} />
+      <Cards category="Europa" color="blue" from={0} len={Math.PI / 4} onPointerOver={hover} onPointerOut={hover} setHoveredText={setHoveredText} />
       <Cards
-        category="oriente medio"
+        category="Africa"
+        color="green"
+        from={Math.PI / 4}
+        len={Math.PI / 2}
+        position={[0, 0.4, 0]}
+        onPointerOver={hover}
+        onPointerOut={hover}
+        setHoveredText={setHoveredText}
+      />
+      <Cards
+        category="Americas"
+        color="red"
+        from={Math.PI / 4 + Math.PI / 2}
+        len={Math.PI / 2}
+        onPointerOver={hover}
+        onPointerOut={hover}
+        setHoveredText={setHoveredText}
+      />
+      <Cards
+        category="Oriente medio"
+        color="yellow"
         from={Math.PI * 1.25}
         len={Math.PI * 2 - Math.PI * 1.25}
         position={[0, -0.4, 0]}
         onPointerOver={hover}
         onPointerOut={hover}
+        setHoveredText={setHoveredText}
       />
-      <ActiveCard hovered={hovered} />
+      <ActiveCard hovered={hovered} text={hoveredText} />
     </group>
   )
 }
 
-function Cards({ category, data, from = 0, len = Math.PI * 2, radius = 5.25, onPointerOver, onPointerOut, ...props }) {
+function Cards({ category, color, data, from = 0, len = Math.PI * 2, radius = 5.25, onPointerOver, onPointerOut, setHoveredText, ...props }) {
   const [hovered, hover] = useState(null)
   const amount = Math.round(len * 22)
   const textPosition = from + (amount / 2 / amount) * len
@@ -62,8 +82,9 @@ function Cards({ category, data, from = 0, len = Math.PI * 2, radius = 5.25, onP
         return (
           <Card
             key={angle}
-            onPointerOver={(e) => (e.stopPropagation(), hover(i), onPointerOver(i))}
-            onPointerOut={() => (hover(null), onPointerOut(null))}
+            color={color}
+            onPointerOver={(e) => (e.stopPropagation(), hover(i), onPointerOver(i), setHoveredText(`Text for ${category} ${i}`))}
+            onPointerOut={() => (hover(null), onPointerOut(null), setHoveredText(null))}
             position={[Math.sin(angle) * radius, yOffset, Math.cos(angle) * radius]}
             rotation={[0, Math.PI / 2 + angle, 0]}
             active={hovered !== null}
@@ -76,7 +97,7 @@ function Cards({ category, data, from = 0, len = Math.PI * 2, radius = 5.25, onP
   )
 }
 
-function Card({ url, active, hovered, ...props }) {
+function Card({ url, color, active, hovered, ...props }) {
   const ref = useRef()
   useFrame((state, delta) => {
     const f = hovered ? 1.4 : active ? 1.25 : 1
@@ -85,14 +106,16 @@ function Card({ url, active, hovered, ...props }) {
   })
   return (
     <group {...props}>
-      <Image ref={ref} transparent radius={0.075} url={url} scale={[1.618, 1, 1]} side={THREE.DoubleSide} />
+      <group ref={ref}>
+        <Plane position={[-0.75, 0.45, 0.01]} scale={[0.1, 0.1, 1]} rotation={[0, 0, 0]} material-color={color} />
+        <Image transparent radius={0.075} url={url} scale={[1.618, 1, 1]} side={THREE.DoubleSide} />
+      </group>
     </group>
   )
 }
 
-function ActiveCard({ hovered, ...props }) {
+function ActiveCard({ hovered, text, ...props }) {
   const ref = useRef()
-  const name = useMemo(() => generate({ exactly: 2 }).join(' '), [hovered])
   useLayoutEffect(() => void (ref.current.material.zoom = 0.8), [hovered])
   useFrame((state, delta) => {
     easing.damp(ref.current.material, 'zoom', 1, 0.5, delta)
@@ -101,7 +124,7 @@ function ActiveCard({ hovered, ...props }) {
   return (
     <Billboard {...props}>
       <Text font={suspend(inter).default} fontSize={0.5} position={[2.15, 3.85, 0]} anchorX="left" color="black">
-        {hovered !== null && `${name}\n${hovered}`}
+        {hovered !== null && text}
       </Text>
       <Image ref={ref} transparent radius={0.3} position={[0, 1.5, 0]} scale={[3.5, 1.618 * 3.5, 0.2, 1]} url={`/img${Math.floor(hovered % 10) + 1}.jpg`} />
     </Billboard>
