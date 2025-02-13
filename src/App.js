@@ -29,10 +29,17 @@ function Scene({ children, ...props }) {
   })
   return (
     <group ref={ref} {...props}>
-      <Cards category="spring" from={0} len={Math.PI / 4} onPointerOver={hover} onPointerOut={hover} />
-      <Cards category="summer" from={Math.PI / 4} len={Math.PI / 2} position={[0, 0.4, 0]} onPointerOver={hover} onPointerOut={hover} />
-      <Cards category="autumn" from={Math.PI / 4 + Math.PI / 2} len={Math.PI / 2} onPointerOver={hover} onPointerOut={hover} />
-      <Cards category="winter" from={Math.PI * 1.25} len={Math.PI * 2 - Math.PI * 1.25} position={[0, -0.4, 0]} onPointerOver={hover} onPointerOut={hover} />
+      <Cards category="Europa" from={0} len={Math.PI / 4} onPointerOver={hover} onPointerOut={hover} />
+      <Cards category="Africa" from={Math.PI / 4} len={Math.PI / 2} position={[0, 0.4, 0]} onPointerOver={hover} onPointerOut={hover} />
+      <Cards category="Americas" from={Math.PI / 4 + Math.PI / 2} len={Math.PI / 2} onPointerOver={hover} onPointerOut={hover} />
+      <Cards
+        category="oriente medio"
+        from={Math.PI * 1.25}
+        len={Math.PI * 2 - Math.PI * 1.25}
+        position={[0, -0.4, 0]}
+        onPointerOver={hover}
+        onPointerOut={hover}
+      />
       <ActiveCard hovered={hovered} />
     </group>
   )
@@ -51,12 +58,13 @@ function Cards({ category, data, from = 0, len = Math.PI * 2, radius = 5.25, onP
       </Billboard>
       {Array.from({ length: amount - 3 /* minus 3 images at the end, creates a gap */ }, (_, i) => {
         const angle = from + (i / amount) * len
+        const yOffset = Math.sin(angle) * 0.5 // Adjust y position to create up and down effect
         return (
           <Card
             key={angle}
             onPointerOver={(e) => (e.stopPropagation(), hover(i), onPointerOver(i))}
             onPointerOut={() => (hover(null), onPointerOut(null))}
-            position={[Math.sin(angle) * radius, 0, Math.cos(angle) * radius]}
+            position={[Math.sin(angle) * radius, yOffset, Math.cos(angle) * radius]}
             rotation={[0, Math.PI / 2 + angle, 0]}
             active={hovered !== null}
             hovered={hovered === i}
