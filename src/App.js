@@ -51,13 +51,12 @@ function Cards({ category, data, from = 0, len = Math.PI * 2, radius = 5.25, onP
       </Billboard>
       {Array.from({ length: amount - 3 /* minus 3 images at the end, creates a gap */ }, (_, i) => {
         const angle = from + (i / amount) * len
-        const yOffset = Math.sin(angle) * 0.5 // Adjust y position to create up and down effect
         return (
           <Card
             key={angle}
             onPointerOver={(e) => (e.stopPropagation(), hover(i), onPointerOver(i))}
             onPointerOut={() => (hover(null), onPointerOut(null))}
-            position={[Math.sin(angle) * radius, yOffset, Math.cos(angle) * radius]}
+            position={[Math.sin(angle) * radius, 0, Math.cos(angle) * radius]}
             rotation={[0, Math.PI / 2 + angle, 0]}
             active={hovered !== null}
             hovered={hovered === i}
