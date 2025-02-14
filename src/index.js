@@ -15,16 +15,16 @@ function Legend() {
     <div style={{ fontSize: '13px', position: 'absolute', pointerEvents: 'none', top: 0, left: 0, width: '100vw', height: '100vh' }}>
       <div style={{ position: 'absolute', top: 120, left: 40, display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-          <div style={{ width: '20px', height: '20px', backgroundColor: 'blue' }}></div>
-          <span>Category 1</span>
+          <div style={{ width: '12px', height: '12px', backgroundColor: 'green' }}></div>
+          <span>category 1</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-          <div style={{ width: '20px', height: '20px', backgroundColor: 'yellow' }}></div>
-          <span>Category 2</span>
+          <div style={{ width: '12px', height: '12px', backgroundColor: 'yellow' }}></div>
+          <span>category 2</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-          <div style={{ width: '20px', height: '20px', backgroundColor: 'green' }}></div>
-          <span>Category 3</span>
+          <div style={{ width: '12px', height: '12px', backgroundColor: 'red' }}></div>
+          <span>category 3</span>
         </div>
       </div>
       <a style={{ position: 'absolute', top: 40, left: 40, fontSize: '13px' }} href="#">
